@@ -23,7 +23,66 @@ base_packages:
   - python3-venv
 
 hermes_profiles:
-  - heimdall
-  - tyr
-  - mimir
-  - eitri
+  - name: heimdall
+    enabled: true
+    gateway_enabled: false
+    telegram_enabled: false
+    description: "Customer complaint intake agent. Watches support chats, detects complaints, extracts facts, and prepares structured ticket payloads."
+    files:
+      soul: "agent_profiles/heimdall/SOUL.md"
+      skills_dir: "agent_profiles/heimdall/skills"
+    tools:
+      rtk: false
+      ponytail: false
+      headroom: false
+    terminal:
+      cpu: 1
+      memory_mb: 2048
+
+  - name: tyr
+    enabled: true
+    gateway_enabled: false
+    telegram_enabled: false
+    description: "Ticket operations agent. Creates and updates support tickets, assigns teams, enforces SLA rules, and escalates critical cases."
+    files:
+      soul: "agent_profiles/tyr/SOUL.md"
+      skills_dir: "agent_profiles/tyr/skills"
+    tools:
+      rtk: false
+      ponytail: false
+      headroom: false
+    terminal:
+      cpu: 1
+      memory_mb: 3072
+
+  - name: mimir
+    enabled: true
+    gateway_enabled: false
+    telegram_enabled: false
+    description: "Reporting and knowledge agent. Summarizes tickets, generates reports, finds recurring issues, and answers SOP questions."
+    files:
+      soul: "agent_profiles/mimir/SOUL.md"
+      skills_dir: "agent_profiles/mimir/skills"
+    tools:
+      rtk: false
+      ponytail: false
+      headroom: false
+    terminal:
+      cpu: 1
+      memory_mb: 4096
+
+  - name: eitri
+    enabled: true
+    gateway_enabled: false
+    telegram_enabled: false
+    description: "Creator and codebase maintainer agent. Codes, debugs, tests, maintains Ansible, Docker, Hermes profiles, and the Yggdrasil backend."
+    files:
+      soul: "agent_profiles/eitri/SOUL.md"
+      skills_dir: "agent_profiles/eitri/skills"
+    tools:
+      rtk: true
+      ponytail: true
+      headroom: false
+    terminal:
+      cpu: 2
+      memory_mb: 6144

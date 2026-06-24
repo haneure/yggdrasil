@@ -1,0 +1,21 @@
+terminal:
+  backend: docker
+  cwd: {{ yggdrasil_workspace }}
+  docker_image: "nikolaik/python-nodejs:python3.11-nodejs20"
+  docker_forward_env: []
+  container_cpu: {{ profile.terminal.cpu | default(1) }}
+  container_memory: {{ profile.terminal.memory_mb | default(3072) }}
+  container_persistent: true
+
+telegram:
+  require_mention: true
+  exclusive_bot_mentions: true
+{% if profile.name == "heimdall" %}
+  observe_unmentioned_group_messages: true
+{% endif %}
+
+plugins:
+  enabled:
+{% if profile.tools.rtk | default(false) %}
+    - rtk
+{% endif %}

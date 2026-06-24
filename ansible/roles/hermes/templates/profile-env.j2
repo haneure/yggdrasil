@@ -1,0 +1,17 @@
+# Provider keys
+OPENCODE_GO_API_KEY={{ opencode_go_api_key }}
+DEEPSEEK_API_KEY={{ deepseek_api_key }}
+OPENROUTER_API_KEY={{ openrouter_api_key }}
+
+# Telegram bot token
+{% if profile.name == "heimdall" %}
+TELEGRAM_BOT_TOKEN={{ telegram_heimdall_bot_token }}
+{% elif profile.name == "tyr" %}
+TELEGRAM_BOT_TOKEN={{ telegram_tyr_bot_token }}
+{% elif profile.name == "mimir" %}
+TELEGRAM_BOT_TOKEN={{ telegram_mimir_bot_token }}
+{% elif profile.name == "eitri" %}
+TELEGRAM_BOT_TOKEN={{ telegram_eitri_bot_token }}
+{% endif %}
+
+TELEGRAM_ALLOWED_USERS={{ telegram_admin_user_ids | join(',') }}
