@@ -1,0 +1,35 @@
+---
+# Copy this file to vault.yml, fill the real values, then encrypt it:
+#
+# cp inventories/prod/group_vars/all/vault.example.yml inventories/prod/group_vars/all/vault.yml
+# ansible-vault encrypt inventories/prod/group_vars/all/vault.yml
+#
+# Do not commit vault.yml.
+
+# Telegram bot tokens from BotFather
+telegram_heimdall_bot_token: "CHANGE_ME"
+telegram_tyr_bot_token: "CHANGE_ME"
+telegram_mimir_bot_token: "CHANGE_ME"
+telegram_eitri_bot_token: "CHANGE_ME"
+
+# Telegram numeric IDs
+telegram_admin_user_ids:
+  - "CHANGE_ME"
+
+telegram_customer_group_id: "CHANGE_ME"
+telegram_internal_group_id: "CHANGE_ME"
+telegram_engineering_group_id: "CHANGE_ME"
+
+# LLM provider keys
+opencode_go_api_key: "CHANGE_ME"
+deepseek_api_key: "CHANGE_ME"
+openrouter_api_key: "CHANGE_ME"
+
+# Future backend secrets
+ticket_api_secret: "CHANGE_ME"
+postgres_password: "CHANGE_ME"
+redis_password: "CHANGE_ME"
+
+# Optional future integrations
+hindsight_llm_api_key: "CHANGE_ME"
+n8n_encryption_key: "CHANGE_ME"
