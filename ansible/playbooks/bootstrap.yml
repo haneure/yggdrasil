@@ -1,0 +1,16 @@
+---
+- name: Bootstrap Yggdrasil VPS
+  hosts: yggdrasil
+  gather_facts: true
+
+  roles:
+    - base
+    - docker
+
+- name: Install Hermes on Yggdrasil VPS
+  hosts: yggdrasil
+  gather_facts: true
+
+  roles:
+    - role: hermes
+      when: not ansible_check_mode

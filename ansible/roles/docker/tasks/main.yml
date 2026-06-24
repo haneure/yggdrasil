@@ -1,0 +1,94 @@
+---
+- name: Set Docker apt architecture
+  ansible.builtin.set_fact:
+    docker_apt_arch: >-
+      {{
+        'amd64' if ansible_facts['architecture'] == 'x86_64'
+        else 'arm64' if ansible_facts['architecture'] in ['aarch64', 'arm64']
+        else ansible_facts['architecture']
+      }}
+
+- name: Remove legacy Docker apt source files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/sources.list.d/docker.list
+    - /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
+  become: true
+
+- name: Remove legacy Docker gpg keyring
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/docker.gpg
+    state: absent
+  become: true
+
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Download Docker GPG key
+  ansible.builtin.get_url:
+    url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+  become: true
+
+- name: Write Docker deb822 apt source
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}
+      Suites: {{ ansible_facts['distribution_release'] | lower }}
+      Components: stable
+      Architectures: {{ docker_apt_arch }}
+      Signed-By: /etc/apt/keyrings/docker.asc
+  become: true
+
+- name: Remove conflicting old Docker packages
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - docker-compose-v2
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+    update_cache: true
+  become: true
+  ignore_errors: true
+
+- name: Install Docker Engine and Compose plugin
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+  become: true
+
+- name: Add hermes user to docker group
+  ansible.builtin.user:
+    name: "{{ hermes_user }}"
+    groups: docker
+    append: true
+  become: true
+
+- name: Enable Docker service
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started
+    enabled: true
+  become: true

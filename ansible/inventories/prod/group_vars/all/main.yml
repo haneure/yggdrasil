@@ -1,0 +1,29 @@
+---
+server_timezone: Asia/Jakarta
+
+hermes_user: hermes
+hermes_group: hermes
+hermes_home: /home/hermes/.hermes
+hermes_workspace_root: /home/hermes/workspaces
+yggdrasil_workspace: /home/hermes/workspaces/yggdrasil
+
+base_packages:
+  - curl
+  - git
+  - jq
+  - unzip
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - ufw
+  - fail2ban
+  - logrotate
+  - python3
+  - python3-pip
+  - python3-venv
+
+hermes_profiles:
+  - heimdall
+  - tyr
+  - mimir
+  - eitri

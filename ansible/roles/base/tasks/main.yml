@@ -1,0 +1,92 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ base_packages }}"
+    state: present
+  become: true
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ server_timezone }}"
+  become: true
+
+- name: Create hermes group
+  ansible.builtin.group:
+    name: "{{ hermes_group }}"
+    state: present
+  become: true
+
+- name: Create hermes user
+  ansible.builtin.user:
+    name: "{{ hermes_user }}"
+    group: "{{ hermes_group }}"
+    shell: /bin/bash
+    create_home: true
+    state: present
+  become: true
+
+- name: Create hermes workspace root
+  ansible.builtin.file:
+    path: "{{ hermes_workspace_root }}"
+    state: directory
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_group }}"
+    mode: "0755"
+  become: true
+
+- name: Create yggdrasil workspace
+  ansible.builtin.file:
+    path: "{{ yggdrasil_workspace }}"
+    state: directory
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_group }}"
+    mode: "0755"
+  become: true
+
+- name: Enable linger for hermes user
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ hermes_user }}"
+    creates: "/var/lib/systemd/linger/{{ hermes_user }}"
+  become: true
+
+- name: Configure UFW default deny incoming
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+  become: true
+
+- name: Configure UFW default allow outgoing
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+  become: true
+
+- name: Allow SSH through UFW
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+  become: true
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  become: true
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  become: true
+
+- name: Enable fail2ban
+  ansible.builtin.systemd_service:
+    name: fail2ban
+    state: started
+    enabled: true
+  become: true
+  when: not ansible_check_mode
