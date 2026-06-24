@@ -27,13 +27,15 @@
 
 - name: Create profile directories
   ansible.builtin.file:
-    path: "{{ hermes_home }}/profiles/{{ item.name }}"
+    path: "{{ hermes_home }}/profiles/{{ profile.name }}"
     state: directory
     owner: "{{ hermes_user }}"
     group: "{{ hermes_group }}"
     mode: "0700"
   loop: "{{ hermes_profiles }}"
-  when: item.enabled | default(true)
+  loop_control:
+    loop_var: profile
+  when: profile.enabled | default(true)
   become: true
 
 - name: Deploy shared yggdrasil AGENTS.md
@@ -47,19 +49,21 @@
 
 - name: Deploy profile SOUL.md files
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../{{ item.files.soul }}"
-    dest: "{{ hermes_home }}/profiles/{{ item.name }}/SOUL.md"
+    src: "{{ playbook_dir }}/../{{ profile.files.soul }}"
+    dest: "{{ hermes_home }}/profiles/{{ profile.name }}/SOUL.md"
     owner: "{{ hermes_user }}"
     group: "{{ hermes_group }}"
     mode: "0600"
   loop: "{{ hermes_profiles }}"
-  when: item.enabled | default(true)
+  loop_control:
+    loop_var: profile
+  when: profile.enabled | default(true)
   become: true
 
 - name: Deploy Hermes profile env files
   ansible.builtin.template:
     src: profile-env.j2
-    dest: "{{ hermes_home }}/profiles/{{ item.name }}/.env"
+    dest: "{{ hermes_home }}/profiles/{{ profile.name }}/.env"
     owner: "{{ hermes_user }}"
     group: "{{ hermes_group }}"
     mode: "0600"
@@ -84,26 +88,30 @@
 
 - name: Ensure profile skills directories exist
   ansible.builtin.file:
-    path: "{{ hermes_home }}/profiles/{{ item.name }}/skills"
+    path: "{{ hermes_home }}/profiles/{{ profile.name }}/skills"
     state: directory
     owner: "{{ hermes_user }}"
     group: "{{ hermes_group }}"
     mode: "0755"
   loop: "{{ hermes_profiles }}"
-  when: item.enabled | default(true)
+  loop_control:
+    loop_var: profile
+  when: profile.enabled | default(true)
   become: true
 
 - name: Deploy profile skills
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../{{ item.files.skills_dir }}/"
-    dest: "{{ hermes_home }}/profiles/{{ item.name }}/skills/"
+    src: "{{ playbook_dir }}/../{{ profile.files.skills_dir }}/"
+    dest: "{{ hermes_home }}/profiles/{{ profile.name }}/skills/"
     owner: "{{ hermes_user }}"
     group: "{{ hermes_group }}"
     mode: preserve
   loop: "{{ hermes_profiles }}"
+  loop_control:
+    loop_var: profile
   when:
-    - item.enabled | default(true)
-    - item.files.skills_dir is defined
+    - profile.enabled | default(true)
+    - profile.files.skills_dir is defined
   become: true
 
 - name: Verify Hermes command
