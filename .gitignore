@@ -1,0 +1,8 @@
+# Ansible secrets
+ansible/.vault_pass
+ansible/inventories/*/group_vars/**/vault.yml
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
